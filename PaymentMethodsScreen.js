@@ -1,19 +1,18 @@
-import { Button, Text, View } from 'react-native'
-import { useContext } from 'react';
-import { CustomerContext } from './App';
+import { Button, Text, View } from "react-native";
+import { useAuth } from "./Auth";
 
 export default function PaymentMethodsScreen() {
-    const { customer, setCustomer } = useContext(CustomerContext)
-    return (
+  const { customer, setCustomer } = useAuth();
+  return (
     <View>
-    <Text>{customer}</Text>
-    <Button
+      <Text>{customer}</Text>
+      <Button
         variant="primary"
         title="Set Customer"
         onPress={() => {
-            setCustomer('customer2')
+          setCustomer("customer2");
         }}
-    />
+      />
     </View>
-    );
-  }
+  );
+}
