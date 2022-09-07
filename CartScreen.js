@@ -1,11 +1,13 @@
 import { API_URL } from "./constants";
 import { useStripe } from "@stripe/stripe-react-native";
-import { useState, useEffect } from "react";
-import { Alert, Button } from "react-native";
+import { useState, useEffect, useContext } from "react";
+import { View, Text, Alert, Button } from "react-native";
+import { Context } from './Context'
 
 export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
+  const { cart } = useContext(Context);
 
   const fetchPaymentSheetParams = async () => {
     try {
@@ -62,11 +64,15 @@ export default function CartScreen() {
   }, []);
 
   return (
-    <Button
+    <View>
+    <Text>{JSON.stringify(cart)}</Text>
+<Button
       variant="primary"
       disabled={!loading}
       title="Checkout"
       onPress={openPaymentSheet}
     />
+    </View>
+    
   );
 }

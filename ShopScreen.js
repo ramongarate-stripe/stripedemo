@@ -1,4 +1,4 @@
-import React from "react";
+import { useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -9,6 +9,7 @@ import {
   Image,
   StatusBar,
 } from "react-native";
+import { Context } from './Context'
 
 const DATA = [
   {
@@ -31,27 +32,28 @@ const DATA = [
   },
 ];
 
-const Item = ({ title, price, imageUrl }) => (
+const Item = ({ item, addToCart }) => (
   <View style={styles.item}>
     <Image
       style={styles.image}
       source={{
-        uri: imageUrl,
+        uri: item.imageUrl,
       }}
     />
     <View style={styles.textContainer}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.price}>${price}</Text>
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.price}>${item.price}</Text>
     </View>
-    <TouchableOpacity style={styles.button} onPress={() => console.log("hi")}>
+    <TouchableOpacity style={styles.button} onPress={() => addToCart(item.id)}>
       <Text>Add to cart</Text>
     </TouchableOpacity>
   </View>
 );
 
 const ShopScreen = () => {
+  const { addToCart } = useContext(Context);
   const renderItem = ({ item }) => (
-    <Item title={item.title} price={item.price} imageUrl={item.imageUrl} />
+    <Item item={item} addToCart={addToCart} />
   );
 
   return (

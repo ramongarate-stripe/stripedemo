@@ -5,7 +5,7 @@ import CartScreen from "./CartScreen";
 import PaymentMethodsScreen from "./PaymentMethodsScreen";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { PUBLISHABLE_KEY } from "./constants";
-import { AuthProvider } from "./Auth";
+import { ContextProvider } from "./Context";
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +17,7 @@ export default function App() {
       merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
     >
       <NavigationContainer>
-        <AuthProvider>
+        <ContextProvider>
           <Tab.Navigator>
             <Tab.Screen name="Shop" component={ShopScreen} />
             <Tab.Screen name="Cart" component={CartScreen} />
@@ -26,7 +26,7 @@ export default function App() {
               component={PaymentMethodsScreen}
             />
           </Tab.Navigator>
-        </AuthProvider>
+        </ContextProvider>
       </NavigationContainer>
     </StripeProvider>
   );
