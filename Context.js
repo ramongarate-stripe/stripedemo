@@ -1,17 +1,21 @@
 import { useState, createContext } from "react";
+import { DATA } from "./constants";
 
 export const Context = createContext();
 
 export function ContextProvider({ children }) {
   const [customer, setCustomer] = useState(null);
-  const [cart, setCart] = useState({});
+  const [cart, setCart] = useState(
+    DATA.map((item) => ({ ...item, quantity: 0 }))
+  );
 
   const addToCart = (id) => {
-    if (!cart[id]) {
-      setCart({ ...cart, [id]: 1 });
-    } else {
-      setCart({ ...cart, [id]: cart[id] + 1 });
-    }
+    setCart(
+      cart.map((item) => ({
+        ...item,
+        quantity: item.id === id ? item.quantity + 1 : item.quantity,
+      }))
+    );
   };
 
   const value = {
