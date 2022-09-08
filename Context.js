@@ -27,12 +27,17 @@ export function ContextProvider({ children }) {
     );
   };
 
+  const emptyCart = () => {
+    setCart(DATA.map((item) => ({ ...item, quantity: 0 })));
+  };
+
   const value = {
     customer,
     setCustomer,
     cart,
     addToCart,
     removeFromCart,
+    emptyCart,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

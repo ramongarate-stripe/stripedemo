@@ -18,65 +18,45 @@ import { Context } from "./Context";
 export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
-  const { cart, addToCart, removeFromCart } = useContext(Context);
+  const { cart, addToCart, removeFromCart, emptyCart } = useContext(Context);
   const totalAmount = cart.reduce(
     (total, item) => total + item.quantity * item.price,
     0
   );
 
-  const fetchPaymentSheetParams = async () => {
+  const openPaymentSheet = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/checkout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ amount: totalAmount }),
       });
       const { paymentIntent, ephemeralKey, customer } = await response.json();
-      return {
-        paymentIntent,
-        ephemeralKey,
-        customer,
-      };
+      const init = await initPaymentSheet({
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
+        paymentIntentClientSecret: paymentIntent,
+      });
+      if (init.error) {
+        throw init.error;
+      }
+      const present = await presentPaymentSheet();
+      if (present.error) {
+        throw present.error;
+      }
+      setLoading(false);
+      emptyCart();
+      Alert.alert("Purchase successful!");
     } catch (e) {
+      setLoading(false);
       console.log(e);
-      Alert.alert("Endpoint not responding");
+      Alert.alert(`Error: ${JSON.stringify(e)}`);
       return { endpointError: true };
     }
   };
-
-  const initializePaymentSheet = async () => {
-    const {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-      publishableKey,
-      endpointError,
-    } = await fetchPaymentSheetParams();
-
-    const { error } = await initPaymentSheet({
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-    });
-    if (!error && !endpointError) {
-      setLoading(true);
-    }
-  };
-
-  const openPaymentSheet = async () => {
-    const { error } = await presentPaymentSheet();
-
-    if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-    } else {
-      Alert.alert("Success", "Your order is confirmed!");
-    }
-  };
-
-  useEffect(() => {
-    initializePaymentSheet();
-  }, []);
 
   const Item = ({ item, addToCart }) => (
     <View style={styles.item}>
@@ -114,13 +94,17 @@ export default function CartScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <Text style={styles.totalAmount}>Total: ${totalAmount}</Text>
+      <Text style={styles.totalAmount}>
+        {totalAmount > 0 ? "Total: $" + totalAmount : "Your cart is empty"}
+      </Text>
       <TouchableOpacity
         style={styles.checkoutButton}
-        disabled={!loading}
+        disabled={loading}
         onPress={openPaymentSheet}
       >
-        <Text style={styles.buttonText}>Checkout</Text>
+        <Text style={styles.buttonText}>
+          {!loading ? "Checkout" : "Loading..."}
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
