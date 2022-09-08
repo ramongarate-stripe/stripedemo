@@ -5,7 +5,6 @@ import {
   View,
   Text,
   Alert,
-  Button,
   SafeAreaView,
   StyleSheet,
   StatusBar,

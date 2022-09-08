@@ -7,6 +7,7 @@ import {
   Image,
   StatusBar,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { useState, useContext, useEffect } from "react";
 import { Context } from "./Context";
@@ -104,10 +105,10 @@ export default function PaymentMethodsScreen() {
   const renderItem = ({ item }) => <Item item={item} />;
 
   return (
-    <View>
-      <Text>
+    <SafeAreaView>
+      <Text style={styles.customerText}>
         {customer
-          ? "Hello " + customer.name
+          ? "Logged in as: " + customer.name
           : "Please click the button to Log In"}
       </Text>
       <FlatList
@@ -116,27 +117,40 @@ export default function PaymentMethodsScreen() {
         keyExtractor={(item) => item.fingerprint}
       />
       {!customer ? (
-        <TouchableOpacity
-          style={styles.loginButton}
-          disabled={loading}
-          onPress={login}
-        >
-          <Text style={styles.loginText}>
-            {!loading ? "Login" : "Loading..."}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            disabled={loading}
+            onPress={login}
+          >
+            <Text style={styles.loginText}>
+              {!loading ? "Login" : "Loading..."}
+            </Text>
+          </TouchableOpacity>
+        </View>
       ) : (
-        <TouchableOpacity
-          style={styles.loginButton}
-          disabled={loading}
-          onPress={logout}
-        >
-          <Text style={styles.loginText}>
-            {!loading ? "Logout" : "Loading..."}
-          </Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity
+            style={styles.item}
+            onPress={() => console.log("click")}
+          >
+            <Text style={styles.plusText}>+</Text>
+            <Text style={styles.addText}>Add Payment Method</Text>
+          </TouchableOpacity>
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.loginButton}
+              disabled={loading}
+              onPress={logout}
+            >
+              <Text style={styles.loginText}>
+                {!loading ? "Logout" : "Loading..."}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -172,7 +186,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
   container: {
-    flex: 1,
     marginTop: StatusBar.currentHeight || 0,
     alignItems: "center",
   },
@@ -204,13 +217,25 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: "white",
   },
+  plusText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    width: 64,
+    textAlign: "center",
+  },
+  addText: {
+    fontSize: 20,
+    paddingLeft: 10,
+  },
+  customerText: {
+    fontSize: 15,
+    width: "100%",
+    padding: 10,
+    textAlign: "center",
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  price: {
-    fontSize: 15,
-    paddingTop: 5,
   },
   quantity: {
     padding: 10,
