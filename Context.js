@@ -9,7 +9,7 @@ export function ContextProvider({ children }) {
     DATA.map((item) => ({ ...item, quantity: 0 }))
   );
 
-  const addToCart = (id) => {
+  const addToCart = ({ id }) => {
     setCart(
       cart.map((item) => ({
         ...item,
@@ -18,7 +18,7 @@ export function ContextProvider({ children }) {
     );
   };
 
-  const removeFromCart = (id) => {
+  const removeFromCart = ({ id }) => {
     setCart(
       cart.map((item) => ({
         ...item,

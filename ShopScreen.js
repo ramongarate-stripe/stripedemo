@@ -24,7 +24,7 @@ const Item = ({ item, addToCart }) => (
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.price}>${item.price}</Text>
     </View>
-    <TouchableOpacity style={styles.button} onPress={() => addToCart(item.id)}>
+    <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
       <Text>Add to cart</Text>
     </TouchableOpacity>
   </View>

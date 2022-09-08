@@ -19,6 +19,10 @@ export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
   const { cart, addToCart, removeFromCart } = useContext(Context);
+  const totalAmount = cart.reduce(
+    (total, item) => total + item.quantity * item.price,
+    0
+  );
 
   const fetchPaymentSheetParams = async () => {
     try {
@@ -89,15 +93,12 @@ export default function CartScreen() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => removeFromCart(item.id)}
+          onPress={() => removeFromCart(item)}
         >
           <Text style={styles.buttonText}>-</Text>
         </TouchableOpacity>
         <Text style={styles.quantity}>{item.quantity}</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => addToCart(item.id)}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
@@ -113,13 +114,14 @@ export default function CartScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <Text>{JSON.stringify(cart)}</Text>
-      <Button
-        variant="primary"
+      <Text style={styles.totalAmount}>Total: ${totalAmount}</Text>
+      <TouchableOpacity
+        style={styles.checkoutButton}
         disabled={!loading}
-        title="Checkout"
         onPress={openPaymentSheet}
-      />
+      >
+        <Text style={styles.buttonText}>Checkout</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -128,6 +130,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
+    alignItems: "center",
   },
   item: {
     backgroundColor: "#f9c2ff",
@@ -153,6 +156,19 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "black",
     borderRadius: 20,
+  },
+  totalAmount: {
+    fontSize: 20,
+    margin: 20,
+  },
+  checkoutButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 200,
+    height: 50,
+    backgroundColor: "black",
+    borderRadius: 5,
+    marginBottom: 50,
   },
   buttonText: {
     fontSize: 25,
