@@ -18,11 +18,21 @@ export function ContextProvider({ children }) {
     );
   };
 
+  const removeFromCart = (id) => {
+    setCart(
+      cart.map((item) => ({
+        ...item,
+        quantity: item.id === id ? item.quantity - 1 : item.quantity,
+      }))
+    );
+  };
+
   const value = {
     customer,
     setCustomer,
     cart,
     addToCart,
+    removeFromCart,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

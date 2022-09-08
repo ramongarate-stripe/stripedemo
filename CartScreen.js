@@ -18,7 +18,7 @@ import { Context } from "./Context";
 export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
-  const { cart, addToCart } = useContext(Context);
+  const { cart, addToCart, removeFromCart } = useContext(Context);
 
   const fetchPaymentSheetParams = async () => {
     try {
@@ -84,14 +84,23 @@ export default function CartScreen() {
       />
       <View style={styles.textContainer}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>{item.quantity}</Text>
+        <Text style={styles.price}>{`${item.quantity} x $${item.price}`}</Text>
       </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => addToCart(item.id)}
-      >
-        <Text>Add to cart</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => removeFromCart(item.id)}
+        >
+          <Text style={styles.buttonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.quantity}>{item.quantity}</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => addToCart(item.id)}
+        >
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -122,34 +131,48 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "#f9c2ff",
-    padding: 20,
+    padding: 10,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
     flexDirection: "row",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
+    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-    borderRadius: 5,
-    height: 50,
+    width: 40,
+    height: 40,
+    backgroundColor: "black",
+    borderRadius: 20,
+  },
+  buttonText: {
+    fontSize: 25,
+    color: "white",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
   },
   price: {
+    fontSize: 15,
+    paddingTop: 5,
+  },
+  quantity: {
+    padding: 10,
     fontSize: 20,
-    paddingTop: 10,
   },
   textContainer: {
     flexDirection: "column",
-    width: 100,
+    width: 140,
     alignItems: "left",
     paddingLeft: 10,
     borderRadius: 5,
