@@ -73,9 +73,12 @@ app.get("/payment_methods/:customerId", async (req, res) => {
   Promise.all([customer, paymentMethods]).then(
     async ([customer, paymentMethods]) => {
       res.send(
-        paymentMethods.data.sort(
-          (a, b) => b.id === customer.metadata.default_payment_method
-        )
+        paymentMethods.data
+          .sort((a, b) => b.id === customer.metadata.default_payment_method)
+          .map((pm) => ({
+            ...pm.card,
+            paymentMethodId: pm.id,
+          }))
       );
     }
   );
@@ -88,6 +91,24 @@ app.post("/default", async (req, res) => {
     metadata: { default_payment_method: paymentMethodId },
   });
   res.send(customer);
+});
+
+app.post("/delete", async (req, res) => {
+  // Create or retrieve the Stripe Customer object associated with your user.
+  const { customerId, paymentMethodId } = req.body;
+  const customer = await stripe.paymentMethods.detach(paymentMethodId);
+  const paymentMethods = await stripe.paymentMethods.list({
+    customer: customerId,
+    type: "card",
+  });
+  res.send(
+    paymentMethods.data
+      .sort((a, b) => b.id === customer.metadata.default_payment_method)
+      .map((pm) => ({
+        ...pm.card,
+        paymentMethodId: pm.id,
+      }))
+  );
 });
 
 app.listen(process.env.PORT, () =>

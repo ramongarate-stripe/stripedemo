@@ -35,9 +35,18 @@ export default function PaymentMethodsScreen() {
       body: JSON.stringify({ customerId, paymentMethodId }),
     });
     const customer = await response.json();
-    console.log(paymentMethodId);
-    console.log(customer);
     setCustomer(customer);
+  };
+
+  const deletePaymentMethod = async (customerId, paymentMethodId) => {
+    const response = await fetch(`${API_URL}/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ customerId, paymentMethodId }),
+    });
+    setPaymentMethods(await response.json());
   };
 
   const login = async () => {
@@ -69,13 +78,7 @@ export default function PaymentMethodsScreen() {
             },
           }
         );
-        const paymentMethodsResponse = await response.json();
-        setPaymentMethods(
-          paymentMethodsResponse.map((pm) => ({
-            ...pm.card,
-            paymentMethodId: pm.id,
-          }))
-        );
+        setPaymentMethods(await response.json());
       };
       fetchPaymentMethods();
     }
@@ -90,10 +93,7 @@ export default function PaymentMethodsScreen() {
       },
       {
         text: "Delete Card",
-        onPress: () =>
-          Alert.alert(
-            `${capitalize(item.brand)} ending in ${item.last4} deleted`
-          ),
+        onPress: () => deletePaymentMethod(customer.id, item.paymentMethodId),
         style: "destructive",
       },
       {
