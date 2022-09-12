@@ -57,9 +57,9 @@ app.post("/login", async (req, res) => {
   });
 });
 
-app.post("/payment_methods", async (req, res) => {
+app.get("/payment_methods/:customerId", async (req, res) => {
   // Create or retrieve the Stripe Customer object associated with your user.
-  const { customerId } = req.body;
+  const { customerId } = req.params;
   const paymentMethods = await stripe.paymentMethods.list({
     customer: customerId,
     type: "card",

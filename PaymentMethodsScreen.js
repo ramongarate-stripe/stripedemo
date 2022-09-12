@@ -47,13 +47,15 @@ export default function PaymentMethodsScreen() {
   useEffect(() => {
     if (customer) {
       const fetchPaymentMethods = async () => {
-        const response = await fetch(`${API_URL}/payment_methods`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customerId: customer.id }),
-        });
+        const response = await fetch(
+          `${API_URL}/payment_methods/${customer.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const paymentMethodsResponse = await response.json();
         setPaymentMethods(paymentMethodsResponse.data.map((pm) => pm.card));
         console.log(paymentMethods);
