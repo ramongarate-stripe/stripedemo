@@ -52,19 +52,42 @@ app.post("/login", async (req, res) => {
   const amex = stripe.paymentMethods.attach("pm_card_amex", {
     customer: customer.id,
   });
-  Promise.all([visa, mastercard, amex]).then(() => {
-    res.send(customer);
-  });
+  Promise.all([visa, mastercard, amex]).then(
+    async ([visa, mastercard, amex]) => {
+      const updatedCustomer = await stripe.customers.update(customer.id, {
+        metadata: { default_payment_method: visa.id },
+      });
+      res.send(updatedCustomer);
+    }
+  );
 });
 
 app.get("/payment_methods/:customerId", async (req, res) => {
   // Create or retrieve the Stripe Customer object associated with your user.
   const { customerId } = req.params;
-  const paymentMethods = await stripe.paymentMethods.list({
+  const customer = stripe.customers.retrieve(customerId);
+  const paymentMethods = stripe.paymentMethods.list({
     customer: customerId,
     type: "card",
   });
-  res.send(paymentMethods);
+  Promise.all([customer, paymentMethods]).then(
+    async ([customer, paymentMethods]) => {
+      res.send(
+        paymentMethods.data.sort(
+          (a, b) => b.id === customer.metadata.default_payment_method
+        )
+      );
+    }
+  );
+});
+
+app.post("/default", async (req, res) => {
+  // Create or retrieve the Stripe Customer object associated with your user.
+  const { customerId, paymentMethodId } = req.body;
+  const customer = await stripe.customers.update(customerId, {
+    metadata: { default_payment_method: paymentMethodId },
+  });
+  res.send(customer);
 });
 
 app.listen(process.env.PORT, () =>

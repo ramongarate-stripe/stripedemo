@@ -26,6 +26,20 @@ export default function PaymentMethodsScreen() {
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(null);
 
+  const setDefaultPaymentMethod = async (customerId, paymentMethodId) => {
+    const response = await fetch(`${API_URL}/default`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ customerId, paymentMethodId }),
+    });
+    const customer = await response.json();
+    console.log(paymentMethodId);
+    console.log(customer);
+    setCustomer(customer);
+  };
+
   const login = async () => {
     setLoading(true);
     const response = await fetch(`${API_URL}/login`, {
@@ -35,7 +49,6 @@ export default function PaymentMethodsScreen() {
       },
     });
     const customer = await response.json();
-    console.log(customer.name);
     setCustomer(customer);
     setLoading(false);
   };
@@ -57,8 +70,12 @@ export default function PaymentMethodsScreen() {
           }
         );
         const paymentMethodsResponse = await response.json();
-        setPaymentMethods(paymentMethodsResponse.data.map((pm) => pm.card));
-        console.log(paymentMethods);
+        setPaymentMethods(
+          paymentMethodsResponse.map((pm) => ({
+            ...pm.card,
+            paymentMethodId: pm.id,
+          }))
+        );
       };
       fetchPaymentMethods();
     }
@@ -69,11 +86,7 @@ export default function PaymentMethodsScreen() {
       {
         text: "Set as Default",
         onPress: () =>
-          Alert.alert(
-            `${capitalize(item.brand)} ending in ${
-              item.last4
-            } is now the default payment method`
-          ),
+          setDefaultPaymentMethod(customer.id, item.paymentMethodId),
       },
       {
         text: "Delete Card",
@@ -98,7 +111,11 @@ export default function PaymentMethodsScreen() {
         <Text style={styles.last4}>Ending in {item.last4}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Text style={styles.default}>Default</Text>
+        <Text style={styles.default}>
+          {item.paymentMethodId === customer.metadata.default_payment_method
+            ? "Default"
+            : ""}
+        </Text>
         <Image style={styles.menu} source={require("./assets/menu.png")} />
       </View>
     </TouchableOpacity>
