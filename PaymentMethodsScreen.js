@@ -181,6 +181,10 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 5,
   },
+  default: {
+    fontSize: 20,
+    width: 80,
+  },
   menu: {
     width: 30,
     height: 20,
@@ -193,29 +197,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  removeButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 40,
-    height: 40,
-  },
-  totalAmount: {
-    fontSize: 20,
-    margin: 20,
-  },
-  checkoutButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 200,
-    height: 50,
-    backgroundColor: "black",
-    borderRadius: 5,
-    marginBottom: 50,
-  },
-  buttonText: {
-    fontSize: 40,
-    color: "white",
   },
   plusText: {
     fontSize: 20,
@@ -236,10 +217,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  quantity: {
-    padding: 10,
-    fontSize: 20,
   },
   textContainer: {
     flexDirection: "column",
