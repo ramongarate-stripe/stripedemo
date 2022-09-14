@@ -17,7 +17,8 @@ import { Context } from "./Context";
 export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
-  const { cart, addToCart, removeFromCart, emptyCart } = useContext(Context);
+  const { cart, addToCart, removeFromCart, emptyCart, customer } =
+    useContext(Context);
   const totalAmount = cart.reduce(
     (total, item) => total + item.quantity * item.price,
     0
@@ -31,11 +32,11 @@ export default function CartScreen() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount: totalAmount }),
+        body: JSON.stringify({ amount: totalAmount, customerId: customer?.id }),
       });
-      const { paymentIntent, ephemeralKey, customer } = await response.json();
+      const { paymentIntent, ephemeralKey, customerId } = await response.json();
       const init = await initPaymentSheet({
-        customerId: customer,
+        customerId,
         customerEphemeralKeySecret: ephemeralKey,
         paymentIntentClientSecret: paymentIntent,
       });

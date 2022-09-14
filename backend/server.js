@@ -12,10 +12,12 @@ app.use(express.json());
 // An endpoint for your checkout
 app.post("/checkout", async (req, res) => {
   // Create or retrieve the Stripe Customer object associated with your user.
-  const customer = await stripe.customers.create(); // This example just creates a new Customer every time
+  const customerId =
+    req.body.customerId || (await stripe.customers.create()).id; // This example just creates a new Customer every time
   // Create an ephemeral key for the Customer; this allows the app to display saved payment methods and save new ones
+  console.log(customerId);
   const ephemeralKey = await stripe.ephemeralKeys.create(
-    { customer: customer.id },
+    { customer: customerId },
     { apiVersion: "2020-08-27" }
   );
 
@@ -23,17 +25,15 @@ app.post("/checkout", async (req, res) => {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: req.body.amount * 100,
     currency: "eur",
-    customer: customer.id,
-    automatic_payment_methods: {
-      enabled: true,
-    },
+    customer: customerId,
+    setup_future_usage: "on_session",
   });
 
   // Send the object keys to the client
   res.send({
     publishableKey: process.env.publishable_key, // https://stripe.com/docs/keys#obtain-api-keys
     paymentIntent: paymentIntent.client_secret,
-    customer: customer.id,
+    customerId: customerId,
     ephemeralKey: ephemeralKey.secret,
   });
 });
@@ -43,19 +43,28 @@ app.post("/login", async (req, res) => {
   const customer = await stripe.customers.create({
     name: "Jane Doe",
   });
-  const visa = stripe.paymentMethods.attach("pm_card_visa", {
+  const visa = stripe.setupIntents.create({
+    payment_method: "pm_card_visa",
     customer: customer.id,
+    confirm: true,
+    usage: "on_session",
   });
-  const mastercard = stripe.paymentMethods.attach("pm_card_mastercard", {
+  const mastercard = stripe.setupIntents.create({
+    payment_method: "pm_card_mastercard",
     customer: customer.id,
+    confirm: true,
+    usage: "on_session",
   });
-  const amex = stripe.paymentMethods.attach("pm_card_amex", {
+  const amex = stripe.setupIntents.create({
+    payment_method: "pm_card_amex",
     customer: customer.id,
+    confirm: true,
+    usage: "on_session",
   });
   Promise.all([visa, mastercard, amex]).then(
     async ([visa, mastercard, amex]) => {
       const updatedCustomer = await stripe.customers.update(customer.id, {
-        metadata: { default_payment_method: visa.id },
+        metadata: { default_payment_method: visa.payment_method },
       });
       res.send(updatedCustomer);
     }
