@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useState, useContext, useEffect } from "react";
+import { useStripe } from "@stripe/stripe-react-native";
 import { Context } from "./Context";
 import { API_URL } from "./constants";
 
@@ -25,6 +26,7 @@ export default function PaymentMethodsScreen() {
   const { customer, setCustomer } = useContext(Context);
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(null);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const setDefaultPaymentMethod = async (customerId, paymentMethodId) => {
     const response = await fetch(`${API_URL}/default`, {
@@ -103,6 +105,40 @@ export default function PaymentMethodsScreen() {
     ]);
   };
 
+  const openPaymentSheet = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/addPaymentMethod`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ customerId: customer?.id }),
+      });
+      const { setupIntent, ephemeralKey, customerId } = await response.json();
+      const init = await initPaymentSheet({
+        customerId,
+        customerEphemeralKeySecret: ephemeralKey,
+        setupIntentClientSecret: setupIntent,
+      });
+      if (init.error) {
+        throw init.error;
+      }
+      const present = await presentPaymentSheet();
+      if (present.error) {
+        throw present.error;
+      }
+      setLoading(false);
+      emptyCart();
+      Alert.alert("Payment Method added");
+    } catch (e) {
+      setLoading(false);
+      console.log(e);
+      Alert.alert(`Error: ${JSON.stringify(e)}`);
+      return { endpointError: true };
+    }
+  };
+
   const Item = ({ item }) => (
     <TouchableOpacity style={styles.item} onPress={() => showAlert(item)}>
       <Image style={styles.image} source={CARD_DICT[item.brand]} />
@@ -149,10 +185,7 @@ export default function PaymentMethodsScreen() {
         </View>
       ) : (
         <>
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => console.log("click")}
-          >
+          <TouchableOpacity style={styles.item} onPress={openPaymentSheet}>
             <Text style={styles.plusText}>+</Text>
             <Text style={styles.addText}>Add Payment Method</Text>
           </TouchableOpacity>

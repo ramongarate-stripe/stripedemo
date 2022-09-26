@@ -1,6 +1,6 @@
 import { API_URL } from "./constants";
 import { useStripe } from "@stripe/stripe-react-native";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import {
   View,
   Text,

@@ -38,6 +38,31 @@ app.post("/checkout", async (req, res) => {
   });
 });
 
+app.post("/addPaymentMethod", async (req, res) => {
+  // Create or retrieve the Stripe Customer object associated with your user.
+  const customerId = req.body.customerId;
+  // Create an ephemeral key for the Customer; this allows the app to display saved payment methods and save new ones
+  console.log(customerId);
+  const ephemeralKey = await stripe.ephemeralKeys.create(
+    { customer: customerId },
+    { apiVersion: "2020-08-27" }
+  );
+
+  // Create a PaymentIntent with the payment amount, currency, and customer
+  const setupIntent = await stripe.setupIntents.create({
+    customer: customerId,
+    usage: "on_session",
+  });
+
+  // Send the object keys to the client
+  res.send({
+    publishableKey: process.env.publishable_key, // https://stripe.com/docs/keys#obtain-api-keys
+    setupIntent: setupIntent.client_secret,
+    customerId: customerId,
+    ephemeralKey: ephemeralKey.secret,
+  });
+});
+
 app.post("/login", async (req, res) => {
   // Create or retrieve the Stripe Customer object associated with your user.
   const customer = await stripe.customers.create({
