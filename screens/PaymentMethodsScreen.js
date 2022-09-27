@@ -11,15 +11,15 @@ import {
 } from "react-native";
 import { useState, useContext, useEffect } from "react";
 import { useStripe } from "@stripe/stripe-react-native";
-import { Context } from "./Context";
-import { API_URL } from "./constants";
+import { Context } from "../Context";
+import { API_URL } from "../constants";
 
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 const CARD_DICT = {
-  amex: require("./assets/amex.png"),
-  mastercard: require("./assets/mastercard.png"),
-  visa: require("./assets/visa.png"),
+  amex: require("../assets/amex.png"),
+  mastercard: require("../assets/mastercard.png"),
+  visa: require("../assets/visa.png"),
 };
 
 export default function PaymentMethodsScreen() {
@@ -152,7 +152,7 @@ export default function PaymentMethodsScreen() {
             ? "Default"
             : ""}
         </Text>
-        <Image style={styles.menu} source={require("./assets/menu.png")} />
+        <Image style={styles.menu} source={require("../assets/menu.png")} />
       </View>
     </TouchableOpacity>
   );

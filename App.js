@@ -1,8 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ShopScreen from "./ShopScreen";
-import CartScreen from "./CartScreen";
-import PaymentMethodsScreen from "./PaymentMethodsScreen";
+import ShopScreen from "./screens/ShopScreen";
+import CartScreen from "./screens/CartScreen";
+import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { PUBLISHABLE_KEY } from "./constants";
 import { ContextProvider } from "./Context";

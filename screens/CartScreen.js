@@ -1,4 +1,4 @@
-import { API_URL } from "./constants";
+import { API_URL } from "../constants";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useState, useContext } from "react";
 import {
@@ -12,7 +12,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Context } from "./Context";
+import { Context } from "../Context";
 
 export default function CartScreen() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();

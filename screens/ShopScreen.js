@@ -9,8 +9,8 @@ import {
   Image,
   StatusBar,
 } from "react-native";
-import { Context } from "./Context";
-import { DATA } from "./constants";
+import { Context } from "../Context";
+import { DATA } from "../constants";
 
 const Item = ({ item, addToCart }) => (
   <View style={styles.item}>
