@@ -6,6 +6,7 @@ const stripe = require("stripe")(process.env.secret_key);
 app.use(express.static("."));
 app.use(express.json());
 
+// Creates a Payment Intent and returns parameters for Stripe Payment Sheet
 app.post("/checkout", async (req, res) => {
   // Creates new customer if no customer is provided
   const customerId =
@@ -27,6 +28,7 @@ app.post("/checkout", async (req, res) => {
   });
 });
 
+// Creates a Setup Intent and returns parameters for Stripe Payment Sheet
 app.post("/addPaymentMethod", async (req, res) => {
   const customerId = req.body.customerId;
   console.log(customerId);
@@ -45,6 +47,7 @@ app.post("/addPaymentMethod", async (req, res) => {
   });
 });
 
+// Creates new customer and adds 3 Payment Methods to it
 app.post("/login", async (req, res) => {
   // Create new customer
   const customer = await stripe.customers.create({
@@ -79,6 +82,7 @@ app.post("/login", async (req, res) => {
   );
 });
 
+// Retrieves card Payment Methods of a customer
 app.get("/payment_methods/:customerId", async (req, res) => {
   const { customerId } = req.params;
   const customer = stripe.customers.retrieve(customerId);
@@ -101,6 +105,7 @@ app.get("/payment_methods/:customerId", async (req, res) => {
   );
 });
 
+// Saves a Payment Method in the customer metadata as default_payment_method
 app.post("/default", async (req, res) => {
   const { customerId, paymentMethodId } = req.body;
   const customer = await stripe.customers.update(customerId, {
@@ -109,6 +114,7 @@ app.post("/default", async (req, res) => {
   res.send(customer);
 });
 
+// Detach Payment Method from customer
 app.post("/delete", async (req, res) => {
   const { customerId, paymentMethodId } = req.body;
   const customer = await stripe.paymentMethods.detach(paymentMethodId);
