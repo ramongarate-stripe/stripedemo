@@ -68,21 +68,19 @@ export default function PaymentMethodsScreen() {
     setPaymentMethods(null);
   };
 
+  const fetchPaymentMethods = async (customer) => {
+    const response = await fetch(`${API_URL}/payment_methods/${customer.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    setPaymentMethods(await response.json());
+  };
+
   useEffect(() => {
     if (customer) {
-      const fetchPaymentMethods = async () => {
-        const response = await fetch(
-          `${API_URL}/payment_methods/${customer.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setPaymentMethods(await response.json());
-      };
-      fetchPaymentMethods();
+      fetchPaymentMethods(customer);
     }
   }, [customer]);
 
@@ -129,7 +127,7 @@ export default function PaymentMethodsScreen() {
         throw present.error;
       }
       setLoading(false);
-      emptyCart();
+      fetchPaymentMethods(customer);
       Alert.alert("Payment Method added");
     } catch (e) {
       setLoading(false);
