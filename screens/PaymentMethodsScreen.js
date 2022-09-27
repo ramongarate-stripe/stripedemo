@@ -1,11 +1,10 @@
+// PaymentMethodsScreen.js
 import {
   TouchableOpacity,
   Text,
   View,
-  StyleSheet,
   FlatList,
   Image,
-  StatusBar,
   Alert,
   SafeAreaView,
 } from "react-native";
@@ -13,6 +12,7 @@ import { useState, useContext, useEffect } from "react";
 import { useStripe } from "@stripe/stripe-react-native";
 import { Context } from "../Context";
 import { API_URL } from "../constants";
+import { PaymentMethodsScreenStyles as styles } from "./styles";
 
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
@@ -205,77 +205,3 @@ export default function PaymentMethodsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  loginButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 200,
-    height: 50,
-    backgroundColor: "black",
-    borderRadius: 5,
-    marginBottom: 50,
-  },
-  loginText: {
-    fontSize: 20,
-    color: "white",
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 10,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
-    flexDirection: "row",
-  },
-  image: {
-    width: 64,
-    height: 36,
-    borderRadius: 5,
-  },
-  default: {
-    fontSize: 20,
-    width: 80,
-  },
-  menu: {
-    width: 30,
-    height: 20,
-  },
-  container: {
-    marginTop: StatusBar.currentHeight || 0,
-    alignItems: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  plusText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    width: 64,
-    textAlign: "center",
-  },
-  addText: {
-    fontSize: 20,
-    paddingLeft: 10,
-  },
-  customerText: {
-    fontSize: 15,
-    width: "100%",
-    padding: 10,
-    textAlign: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  textContainer: {
-    flexDirection: "column",
-    width: 140,
-    alignItems: "left",
-    paddingLeft: 10,
-    borderRadius: 5,
-    height: 50,
-  },
-});

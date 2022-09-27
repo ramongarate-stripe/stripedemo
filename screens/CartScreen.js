@@ -1,3 +1,4 @@
+// CartScreen.js
 import { API_URL } from "../constants";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useState, useContext } from "react";
@@ -6,12 +7,11 @@ import {
   Text,
   Alert,
   SafeAreaView,
-  StyleSheet,
-  StatusBar,
   FlatList,
   Image,
   TouchableOpacity,
 } from "react-native";
+import { CartScreenStyles as styles } from "./styles";
 import { Context } from "../Context";
 
 export default function CartScreen() {
@@ -109,73 +109,3 @@ export default function CartScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-    alignItems: "center",
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 10,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
-    flexDirection: "row",
-  },
-  image: {
-    width: 50,
-    height: 50,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 40,
-    height: 40,
-    backgroundColor: "black",
-    borderRadius: 20,
-  },
-  totalAmount: {
-    fontSize: 20,
-    margin: 20,
-  },
-  checkoutButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 200,
-    height: 50,
-    backgroundColor: "black",
-    borderRadius: 5,
-    marginBottom: 50,
-  },
-  buttonText: {
-    fontSize: 25,
-    color: "white",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  price: {
-    fontSize: 15,
-    paddingTop: 5,
-  },
-  quantity: {
-    padding: 10,
-    fontSize: 20,
-  },
-  textContainer: {
-    flexDirection: "column",
-    width: 140,
-    alignItems: "left",
-    paddingLeft: 10,
-    borderRadius: 5,
-    height: 50,
-  },
-});
