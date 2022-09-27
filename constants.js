@@ -1,3 +1,4 @@
+// constants.js
 export const API_URL =
   "https://stripe-react-native-sample-app-backend.glitch.me";
 export const PUBLISHABLE_KEY =
