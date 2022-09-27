@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const app = express();
 const stripe = require("stripe")(process.env.secret_key);
@@ -6,6 +7,7 @@ app.use(express.static("."));
 app.use(express.json());
 
 app.post("/checkout", async (req, res) => {
+  // Creates new customer if no customer is provided
   const customerId =
     req.body.customerId || (await stripe.customers.create()).id;
   const ephemeralKey = await stripe.ephemeralKeys.create(
@@ -13,7 +15,7 @@ app.post("/checkout", async (req, res) => {
     { apiVersion: "2020-08-27" }
   );
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: req.body.amount * 100,
+    amount: req.body.amount * 100, // Stripe amounts are in cents
     currency: "eur",
     customer: customerId,
     setup_future_usage: "on_session",
