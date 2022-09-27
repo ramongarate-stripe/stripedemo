@@ -31,7 +31,6 @@ app.post("/checkout", async (req, res) => {
 
   // Send the object keys to the client
   res.send({
-    publishableKey: process.env.publishable_key, // https://stripe.com/docs/keys#obtain-api-keys
     paymentIntent: paymentIntent.client_secret,
     customerId: customerId,
     ephemeralKey: ephemeralKey.secret,
@@ -56,7 +55,6 @@ app.post("/addPaymentMethod", async (req, res) => {
 
   // Send the object keys to the client
   res.send({
-    publishableKey: process.env.publishable_key, // https://stripe.com/docs/keys#obtain-api-keys
     setupIntent: setupIntent.client_secret,
     customerId: customerId,
     ephemeralKey: ephemeralKey.secret,
