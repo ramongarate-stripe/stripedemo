@@ -1,35 +1,23 @@
 const express = require("express");
 const app = express();
-const { resolve } = require("path");
-const stripe = require("stripe")(
-  process.env.secret_key /* https://stripe.com/docs/keys#obtain-api-keys */
-  //{ apiVersion: '2020-08-27;automatic_payment_methods_beta=v1;' }
-);
+const stripe = require("stripe")(process.env.secret_key);
 
 app.use(express.static("."));
 app.use(express.json());
 
-// An endpoint for your checkout
 app.post("/checkout", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
   const customerId =
-    req.body.customerId || (await stripe.customers.create()).id; // This example just creates a new Customer every time
-  // Create an ephemeral key for the Customer; this allows the app to display saved payment methods and save new ones
-  console.log(customerId);
+    req.body.customerId || (await stripe.customers.create()).id;
   const ephemeralKey = await stripe.ephemeralKeys.create(
     { customer: customerId },
     { apiVersion: "2020-08-27" }
   );
-
-  // Create a PaymentIntent with the payment amount, currency, and customer
   const paymentIntent = await stripe.paymentIntents.create({
     amount: req.body.amount * 100,
     currency: "eur",
     customer: customerId,
     setup_future_usage: "on_session",
   });
-
-  // Send the object keys to the client
   res.send({
     paymentIntent: paymentIntent.client_secret,
     customerId: customerId,
@@ -38,22 +26,16 @@ app.post("/checkout", async (req, res) => {
 });
 
 app.post("/addPaymentMethod", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
   const customerId = req.body.customerId;
-  // Create an ephemeral key for the Customer; this allows the app to display saved payment methods and save new ones
   console.log(customerId);
   const ephemeralKey = await stripe.ephemeralKeys.create(
     { customer: customerId },
     { apiVersion: "2020-08-27" }
   );
-
-  // Create a PaymentIntent with the payment amount, currency, and customer
   const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
     usage: "on_session",
   });
-
-  // Send the object keys to the client
   res.send({
     setupIntent: setupIntent.client_secret,
     customerId: customerId,
@@ -62,24 +44,25 @@ app.post("/addPaymentMethod", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
+  // Create new customer
   const customer = await stripe.customers.create({
     name: "Jane Doe",
   });
+  // Add 3 mock payment methods (visa, mastercard, amex)
   const visa = stripe.setupIntents.create({
-    payment_method: "pm_card_visa",
+    payment_method: "pm_card_visa", // stripe testing token
     customer: customer.id,
     confirm: true,
     usage: "on_session",
   });
   const mastercard = stripe.setupIntents.create({
-    payment_method: "pm_card_mastercard",
+    payment_method: "pm_card_mastercard", // stripe testing token
     customer: customer.id,
     confirm: true,
     usage: "on_session",
   });
   const amex = stripe.setupIntents.create({
-    payment_method: "pm_card_amex",
+    payment_method: "pm_card_amex", // stripe testing token
     customer: customer.id,
     confirm: true,
     usage: "on_session",
@@ -95,7 +78,6 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/payment_methods/:customerId", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
   const { customerId } = req.params;
   const customer = stripe.customers.retrieve(customerId);
   const paymentMethods = stripe.paymentMethods.list({
@@ -104,6 +86,7 @@ app.get("/payment_methods/:customerId", async (req, res) => {
   });
   Promise.all([customer, paymentMethods]).then(
     async ([customer, paymentMethods]) => {
+      // Sort payment methods so default one appears first
       res.send(
         paymentMethods.data
           .sort((a, b) => b.id === customer.metadata.default_payment_method)
@@ -117,7 +100,6 @@ app.get("/payment_methods/:customerId", async (req, res) => {
 });
 
 app.post("/default", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
   const { customerId, paymentMethodId } = req.body;
   const customer = await stripe.customers.update(customerId, {
     metadata: { default_payment_method: paymentMethodId },
@@ -126,7 +108,6 @@ app.post("/default", async (req, res) => {
 });
 
 app.post("/delete", async (req, res) => {
-  // Create or retrieve the Stripe Customer object associated with your user.
   const { customerId, paymentMethodId } = req.body;
   const customer = await stripe.paymentMethods.detach(paymentMethodId);
   const paymentMethods = await stripe.paymentMethods.list({
