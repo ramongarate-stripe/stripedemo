@@ -47,6 +47,21 @@ app.post("/addPaymentMethod", async (req, res) => {
   });
 });
 
+// Pays with customer's default Payment Method
+app.post("/payWithDefaultPaymentMethod", async (req, res) => {
+  const { amount, customerId, paymentMethod } = req.body;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amount * 100, // Stripe amounts are in cents
+    currency: "eur",
+    customer: customerId,
+    payment_method: paymentMethod,
+    confirm: true,
+  });
+  res.send({
+    paymentIntent,
+  });
+});
+
 // Creates new customer and adds 3 Payment Methods to it
 app.post("/login", async (req, res) => {
   // Create new customer

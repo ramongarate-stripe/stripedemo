@@ -24,6 +24,38 @@ export default function CartScreen() {
     0
   );
 
+  const payWithDefaultPaymentMethod = async (customer) => {
+    setLoading(true);
+    const defaultPaymentMethod = customer.metadata.default_payment_method;
+    if (!defaultPaymentMethod) {
+      Alert.alert("You don't have a default Payment Method");
+    } else {
+      try {
+        const response = await fetch(`${API_URL}/payWithDefaultPaymentMethod`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: totalAmount,
+            customerId: customer.id,
+            paymentMethod: defaultPaymentMethod,
+          }),
+        });
+        if (response.ok) {
+          Alert.alert("Payment successful");
+        } else {
+          Alert.alert("Something went wrong");
+        }
+      } catch (e) {
+        setLoading(false);
+        console.log(e);
+        Alert.alert(`Error: ${JSON.stringify(e)}`);
+      }
+    }
+    setLoading(false);
+  };
+
   const openPaymentSheet = async () => {
     try {
       setLoading(true);
@@ -94,18 +126,41 @@ export default function CartScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <Text style={styles.totalAmount}>
-        {totalAmount > 0 ? "Total: $" + totalAmount : "Your cart is empty"}
-      </Text>
-      <TouchableOpacity
-        style={styles.checkoutButton}
-        disabled={loading}
-        onPress={openPaymentSheet}
-      >
-        <Text style={styles.buttonText}>
-          {!loading ? "Checkout" : "Loading..."}
-        </Text>
-      </TouchableOpacity>
+      {totalAmount > 0 ? (
+        <>
+          <Text style={styles.totalAmount}>{"Total: $" + totalAmount}</Text>
+          {customer && (
+            <>
+              <TouchableOpacity
+                style={styles.checkoutButton}
+                disabled={loading}
+                onPress={() => payWithDefaultPaymentMethod(customer)}
+              >
+                <Text style={styles.buttonText}>
+                  {!loading ? "Pay Now" : "Loading"}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+          <TouchableOpacity
+            style={styles.checkoutButton}
+            disabled={loading}
+            onPress={openPaymentSheet}
+          >
+            <Text style={styles.buttonText}>
+              {!loading
+                ? customer
+                  ? "Choose Card"
+                  : "Checkout"
+                : "Loading..."}
+            </Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <Text style={styles.totalAmount}>Your cart is empty</Text>
+        </>
+      )}
     </SafeAreaView>
   );
 }
